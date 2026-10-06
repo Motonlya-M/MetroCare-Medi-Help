@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>MetroCare Medi Help - Find Clinics</title>
+  <style>
+    /* Core Root Palette and Layout Variables */
+    :root {
+      --bg-main: #545454;
+      --card-bg: #011345;
+      --card-hover: #045A93;
+      --accent-blue: #cce0ff;
+      --text-primary: #ffffff;
+      --text-secondary: #94a3b8;
+      --header-btn-bg: #272f44;
+      --border-line: #2e374d;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: var(--bg-main);
+      color: var(--text-primary);
+      min-height: 100vh;
+    }
+
+    header {
+      position: relative;
+      background-color: #011345;
+      color: #111f30;
+      width: 100%;
+      height: 150px;
+      border-radius: 20px;
+      margin-bottom: 2rem;
+    }
+
+    header img {
+      height: 145px;
+      width: 250px;
+      float: left;
+      border-radius: 8px;
+    }
+
+    nav {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .nav-btn {
+      display: inline-block;
+      background-color: #272f44;
+      color: #ffffff;
+      text-decoration: none;
+      padding: 0.6rem 1.2rem;
+      border: 1px solid #2e374d;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .nav-btn:hover {
+      background-color: #045A93;
+    }
+
+    main {
+      width: 90%;
+      max-width: 950px;
+      margin: 30px auto;
+    }
+
+    .location-header {
+      text-align: center;
+      margin: 30px 0 25px;
+    }
+
+    .location-status {
+      border: 1px solid #465158;
+      border-radius: 15px;
+      padding: 20px;
+      margin-bottom: 25px;
+      background-color: #011345;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .status-icon {
+      width: 60px;
+      height: 60px;
+      background-color: #1565d8;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      flex-shrink: 0;
+    }
+
+    .status-text h3 {
+      margin: 0 0 5px 0;
+      font-size: 18px;
+    }
+
+    .status-text p {
+      margin: 0;
+      color: #c0c5c8;
+      font-size: 14px;
+    }
+
+    .search {
+      margin-bottom: 25px;
+      background-color: #e7f1ff;
+      padding: 12px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .search input {
+      flex: 1;
+      border: none;
+      background: none;
+      padding: 5px;
+      font-size: 15px;
+      outline: none;
+      color: #333;
+    }
+
+    .search input::placeholder {
+      color: #999;
+    }
+
+    .nearby-section h2 {
+      font-size: 24px;
+      margin: 30px 0 20px 0;
+    }
+
+    .clinic-card {
+      background-color: #011345;
+      border: 1px solid #454e53;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 15px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: flex-start;
+      gap: 15px;
+    }
+
+    .clinic-card:hover {
+      background-color: #045A93;
+      border-color: #1565d8;
+      transform: translateY(-2px);
+    }
+
+    .clinic-icon {
+      width: 50px;
+      height: 50px;
+      background-color: #0872d5;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+
+    .clinic-info {
+      flex: 1;
+    }
+
+    .clinic-info h3 {
+      margin: 0 0 8px 0;
+      font-size: 16px;
+    }
+
+    .clinic-info p {
+      margin: 5px 0;
+      font-size: 14px;
+      color: #c0c5c8;
+    }
+
+    .clinic-distance {
+      font-weight: bold;
+      color: #cce0ff;
+      font-size: 14px;
+    }
+
+    .clinic-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 10px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .status-indicator {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .open {
+      color: #65d27b;
+    }
+
+    .open .status-indicator {
+      background-color: #65d27b;
+    }
+
+    .closed {
+      color: #ed5c5c;
+    }
+
+    .closed .status-indicator {
+      background-color: #ed5c5c;
+    }
+
+    .clinic-hours {
+      color: #94a3b8;
+      font-size: 12px;
+      margin-top: 5px;
+    }
+
+    .button {
+      background-color: #0872d9;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.2s ease;
+      margin-top: 10px;
+    }
+
+    .button:hover {
+      background-color: #1565d8;
+    }
+
+    .no-clinics {
+      text-align: center;
+      padding: 40px 20px;
+      color: #94a3b8;
+      background-color: #011345;
+      border: 1px solid #454e53;
+      border-radius: 10px;
+      font-size: 16px;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 40px 20px;
+      color: #94a3b8;
+    }
+
+    .spinner {
+      border: 4px solid #2e374d;
+      border-top: 4px solid #1565d8;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 15px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .filter-section {
+      margin-bottom: 25px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      padding: 8px 16px;
+      background-color: #272f44;
+      border: 1px solid #2e374d;
+      border-radius: 20px;
+      color: white;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 13px;
+    }
+
+    .filter-btn:hover,
+    .filter-btn.active {
+      background-color: #045A93;
+      border-color: #1565d8;
+    }
+
+    footer {
+      border-top: 1px solid #30383d;
+      padding: 25px;
+      text-align: center;
+      color: #aeb7bb;
+      margin-top: 50px;
+    }
+
+    @media (max-width: 768px) {
+      .clinic-card {
+        flex-direction: column;
+      }
+
+      .location-status {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .search {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <img src="../images/1.png" alt="MetroCare Medi Help logo" width="250" height="145">
+    <nav>
+      <ul class="nav-links">
+        <li><a href="homepage.html" class="nav-btn">Home</a></li>
+        <li><a href="about.html" class="nav-btn">About Us</a></li>
+        <li><a href="contact.html" class="nav-btn">Contact Us</a></li>
+        <li><a href="moreinfo.html" class="nav-btn">More Info</a></li>
+        <li><a href="appointments.html" class="nav-btn">Appointments</a></li>
+        <li><a href="clinic.html" class="nav-btn">Clinics</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <div class="location-header">
+      <h2>Find Nearest Mobile Clinic</h2>
+      <p style="color: #c0c5c8;">Locate MetroCare mobile clinics near you for quality care, close to home.</p>
+    </div>
+
+    <div class="location-status">
+      <div class="status-icon">📍</div>
+      <div class="status-text">
+        <h3>Your Location</h3>
+        <p id="locationText">Detecting your location...</p>
+      </div>
+    </div>
+
+    <div class="search">
+      🔍
+      <input 
+        type="text" 
+        id="searchInput"
+        placeholder="Search by clinic name or location..."
+      >
+    </div>
+
+    <div class="filter-section">
+      <button class="filter-btn active" data-filter="all">All Clinics</button>
+      <button class="filter-btn" data-filter="open">Open Now</button>
+      <button class="filter-btn" data-filter="nearby">Within 5km</button>
+    </div>
+
+    <section class="nearby-section">
+      <h2>Nearby Clinics</h2>
+      <div id="clinicsList">
+        <div class="loading">
+          <div class="spinner"></div>
+          <p>Loading nearby clinics...</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    Privacy & Security &nbsp;&nbsp; | &nbsp;&nbsp;
+    Help & Support &nbsp;&nbsp; | &nbsp;&nbsp;
+    Log out
+  </footer>
+
+  <script>
+    // Clinic Database with operating hours
+    const clinicsDatabase = [
+      {
+        id: 1,
+        name: "MetroCare Mobile Clinic - City Central",
+        address: "123 Health Way, Downtown, Cityville",
+        phone: "+27 11 123 4567",
+        lat: -25.7479,
+        lng: 28.2293,
+        hours: {
+          monday: { open: "08:00", close: "18:00" },
+          tuesday: { open: "08:00", close: "18:00" },
+          wednesday: { open: "08:00", close: "18:00" },
+          thursday: { open: "08:00", close: "18:00" },
+          friday: { open: "08:00", close: "17:00" },
+          saturday: { open: "09:00", close: "13:00" },
+          sunday: { open: "closed", close: "closed" }
+        }
+      },
+      {
+        id: 2,
+        name: "MetroCare Mobile Clinic - Westview",
+        address: "45 Community Lane, Westview, Cityville",
+        phone: "+27 11 234 5678",
+        lat: -25.7600,
+        lng: 28.1500,
+        hours: {
+          monday: { open: "07:30", close: "19:00" },
+          tuesday: { open: "07:30", close: "19:00" },
+          wednesday: { open: "07:30", close: "19:00" },
+          thursday: { open: "07:30", close: "19:00" },
+          friday: { open: "07:30", close: "18:00" },
+          saturday: { open: "08:00", close: "14:00" },
+          sunday: { open: "10:00", close: "14:00" }
+        }
+      },
+      {
+        id: 3,
+        name: "MetroCare Mobile Clinic - Eastside",
+        address: "78 Care Street, Eastside, Cityville",
+        phone: "+27 11 345 6789",
+        lat: -25.7300,
+        lng: 28.3200,
+        hours: {
+          monday: { open: "08:00", close: "17:30" },
+          tuesday: { open: "08:00", close: "17:30" },
+          wednesday: { open: "08:00", close: "17:30" },
+          thursday: { open: "08:00", close: "17:30" },
+          friday: { open: "08:00", close: "16:00" },
+          saturday: { open: "closed", close: "closed" },
+          sunday: { open: "closed", close: "closed" }
+        }
+      },
+      {
+        id: 4,
+        name: "MetroCare Mobile Clinic - Northgate",
+        address: "92 Wellness Avenue, Northgate, Cityville",
+        phone: "+27 11 456 7890",
+        lat: -25.7100,
+        lng: 28.2100,
+        hours: {
+          monday: { open: "08:00", close: "18:00" },
+          tuesday: { open: "08:00", close: "18:00" },
+          wednesday: { open: "08:00", close: "18:00" },
+          thursday: { open: "08:00", close: "18:00" },
+          friday: { open: "08:00", close: "17:00" },
+          saturday: { open: "09:00", close: "13:00" },
+          sunday: { open: "closed", close: "closed" }
+        }
+      },
+      {
+        id: 5,
+        name: "MetroCare Mobile Clinic - Southpoint",
+        address: "156 Medical Plaza, Southpoint, Cityville",
+        phone: "+27 11 567 8901",
+        lat: -25.7800,
+        lng: 28.2800,
+        hours: {
+          monday: { open: "07:00", close: "19:00" },
+          tuesday: { open: "07:00", close: "19:00" },
+          wednesday: { open: "07:00", close: "19:00" },
+          thursday: { open: "07:00", close: "19:00" },
+          friday: { open: "07:00", close: "18:00" },
+          saturday: { open: "08:00", close: "15:00" },
+          sunday: { open: "09:00", close: "15:00" }
+        }
+      }
+    ];
+
+    let userLocation = null;
+    let filteredClinics = [];
+    let currentFilter = "all";
+
+    // DOM Elements
+    const locationText = document.getElementById("locationText");
+    const clinicsList = document.getElementById("clinicsList");
+    const searchInput = document.getElementById("searchInput");
+    const filterButtons = document.querySelectorAll(".filter-btn");
+
+    // Get user's current location
+    function getUserLocation() {
+      return new Promise((resolve, reject) => {
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            (position) => {
+              userLocation = {
+                lat: position.coords.latitude,
+                lng: position.coords.longitude,
+                accuracy: position.coords.accuracy
+              };
+              resolve(userLocation);
+            },
+            (error) => {
+              console.warn("Geolocation error:", error);
+              // Fallback to Johannesburg city center
+              userLocation = {
+                lat: -25.7461,
+                lng: 28.2881,
+                accuracy: null
+              };
+              resolve(userLocation);
+            }
+          );
+        } else {
+          // Fallback to Johannesburg city center
+          userLocation = {
+            lat: -25.7461,
+            lng: 28.2881,
+            accuracy: null
+          };
+          resolve(userLocation);
+        }
+      });
+    }
+
+    // Update location display
+    function updateLocationDisplay() {
+      if (userLocation) {
+        locationText.textContent = `Your Location: ${userLocation.lat.toFixed(4)}, ${userLocation.lng.toFixed(4)}`;
+      }
+    }
+
+    // Calculate distance between two coordinates (Haversine formula)
+    function calculateDistance(lat1, lng1, lat2, lng2) {
+      const R = 6371; // Earth's radius in km
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLng = (lng2 - lng1) * Math.PI / 180;
+      const a = 
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+        Math.sin(dLng / 2) * Math.sin(dLng / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      return R * c;
+    }
+
+    // Check if clinic is open right now
+    function isClinicOpen(clinic) {
+      const now = new Date();
+      const dayName = now.toLocaleDateString("en-US", { weekday: "lowercase" });
+      const currentTime = now.getHours().toString().padStart(2, "0") + ":" + 
+                         now.getMinutes().toString().padStart(2, "0");
+
+      const dayHours = clinic.hours[dayName];
+      
+      if (!dayHours || dayHours.open === "closed") {
+        return false;
+      }
+
+      return currentTime >= dayHours.open && currentTime <= dayHours.close;
+    }
+
+    // Get clinic operating hours for today
+    function getTodayHours(clinic) {
+      const now = new Date();
+      const dayName = now.toLocaleDateString("en-US", { weekday: "lowercase" });
+      const dayHours = clinic.hours[dayName];
+      
+      if (!dayHours || dayHours.open === "closed") {
+        return "Closed today";
+      }
+      
+      return `${dayHours.open} - ${dayHours.close}`;
+    }
+
+    // Sort clinics by distance
+    function sortClinicsByDistance(clinics) {
+      return clinics.slice().sort((a, b) => {
+        const distA = calculateDistance(
+          userLocation.lat,
+          userLocation.lng,
+          a.lat,
+          a.lng
+        );
+        const distB = calculateDistance(
+          userLocation.lat,
+          userLocation.lng,
+          b.lat,
+          b.lng
+        );
+        return distA - distB;
+      });
+    }
+
+    // Apply filters
+    function applyFilters(clinics, filter, searchTerm) {
+      let filtered = clinics;
+
+      // Apply filter type
+      switch (filter) {
+        case "open":
+          filtered = filtered.filter(clinic => isClinicOpen(clinic));
+          break;
+        case "nearby":
+          filtered = filtered.filter(clinic => {
+            const distance = calculateDistance(
+              userLocation.lat,
+              userLocation.lng,
+              clinic.lat,
+              clinic.lng
+            );
+            return distance <= 5;
+          });
+          break;
+      }
+
+      // Apply search term
+      if (searchTerm.trim()) {
+        const term = searchTerm.toLowerCase();
+        filtered = filtered.filter(clinic =>
+          clinic.name.toLowerCase().includes(term) ||
+          clinic.address.toLowerCase().includes(term)
+        );
+      }
+
+      return filtered;
+    }
+
+    // Render clinics list
+    function renderClinics(clinics) {
+      if (clinics.length === 0) {
+        clinicsList.innerHTML = `
+          <div class="no-clinics">
+            No clinics found matching your criteria. Try adjusting your search or filters.
+          </div>
+        `;
+        return;
+      }
+
+      clinicsList.innerHTML = clinics.map(clinic => {
+        const distance = calculateDistance(
+          userLocation.lat,
+          userLocation.lng,
+          clinic.lat,
+          clinic.lng
+        );
+        const isOpen = isClinicOpen(clinic);
+        const hours = getTodayHours(clinic);
+
+        return `
+          <div class="clinic-card">
+            <div class="clinic-icon">🏥</div>
+            <div class="clinic-info" style="flex: 1;">
+              <h3>${clinic.name}</h3>
+              <p>${clinic.address}</p>
+              <p>📞 ${clinic.phone}</p>
+              
+              <div class="clinic-distance">
+                📍 ${distance.toFixed(1)} km away
+              </div>
+              
+              <div class="clinic-status ${isOpen ? 'open' : 'closed'}">
+                <span class="status-indicator"></span>
+                ${isOpen ? 'Open Now' : 'Closed'}
+              </div>
+              
+              <div class="clinic-hours">
+                Today's Hours: ${hours}
+              </div>
+              
+              <button class="button" onclick="getDirections(${clinic.lat}, ${clinic.lng}, '${clinic.name}')">
+                🗺️ Get Directions
+              </button>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    // Get directions using Google Maps
+    function getDirections(lat, lng, clinicName) {
+      const url = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&travelmode=driving`;
+      window.open(url, "_blank");
+    }
+
+    // Handle filter button clicks
+    filterButtons.forEach(button => {
+      button.addEventListener("click", () => {
+        filterButtons.forEach(btn => btn.classList.remove("active"));
+        button.classList.add("active");
+        currentFilter = button.dataset.filter;
+        updateClinicsDisplay();
+      });
+    });
+
+    // Handle search input
+    searchInput.addEventListener("input", () => {
+      updateClinicsDisplay();
+    });
+
+    // Update clinics display
+    function updateClinicsDisplay() {
+      const searchTerm = searchInput.value;
+      const sorted = sortClinicsByDistance(clinicsDatabase);
+      filteredClinics = applyFilters(sorted, currentFilter, searchTerm);
+      renderClinics(filteredClinics);
+    }
+
+    // Initialize
+    async function init() {
+      await getUserLocation();
+      updateLocationDisplay();
+      updateClinicsDisplay();
+
+      // Refresh location every 30 seconds
+      setInterval(() => {
+        getUserLocation().then(() => {
+          updateLocationDisplay();
+          updateClinicsDisplay();
+        });
+      }, 30000);
+    }
+
+    // Start the app
+    init();
+  </script>
+</body>
+</html>
